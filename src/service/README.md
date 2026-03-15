@@ -1,3 +1,7 @@
+建议在Main.java中如此初始化
+
+```java
+
 /**
  * 在AssignmentService中可以
  * 调用teacherRepo.getTeacherById()检查老师
@@ -6,8 +10,6 @@
  * 调用assignmentRepo.countByRequirementId()检查需求是否已满
  * 调用assignmentRepo.addAssignment()+saveAll()保存分配
  */
- 
- //E同学建议在Main.java中如此初始化
  
 import service.AssignmentService;
 import storage.AssignmentRepository;
@@ -36,3 +38,5 @@ public class Main {
 
     }
 }
+
+```
