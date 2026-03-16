@@ -163,7 +163,7 @@ public class AssignmentRepository {
      * @return Number of deleted assignments
      */
     public int deleteByRequirementId(String requirementId) {
-        List<Assignment> toRemove = getAssignmentsByTeacherId(requirementId);
+        List<Assignment> toRemove = getAssignmentsByRequirementId(requirementId);
         if (!toRemove.isEmpty()) {
             assignments.removeAll(toRemove);
             saveAll();

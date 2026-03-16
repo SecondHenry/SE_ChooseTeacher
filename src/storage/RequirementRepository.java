@@ -80,7 +80,7 @@ public class RequirementRepository {
      */
     public List<TeachingRequirement> getRequirementsByTerm(String term) {
         return requirements.stream()
-                .filter(r -> r.isFulfilled())
+                .filter(r -> r.getTerm().equals(term))
                 .collect(Collectors.toList());
     }
 
@@ -89,7 +89,7 @@ public class RequirementRepository {
      */
     public List<TeachingRequirement> getUnfulfilledRequirements() {
         return requirements.stream()
-                .filter(r -> r.isFulfilled())
+                .filter(r -> !r.isFulfilled())
                 .collect(Collectors.toList());
     }
 

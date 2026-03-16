@@ -1,15 +1,16 @@
 package model;
 
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 
 /**
+ * Represents a teaching requirement (course demand) for a specific term
+ *
  * Responsibilities:
- * - store teaching requirement-related data
- * - provide requirement-related validation/query methods
- * - provide a display-friendly string for CLI output
+ * - Store teaching requirement data (course, term, required skills, etc.)
+ * - Provide validation methods
+ * - Track fulfillment status (how many teachers needed vs. assigned)
+ * - Provide display format for CLI output
+ * - Provide file format for storage
  */
 public class TeachingRequirement {
 
@@ -18,166 +19,214 @@ public class TeachingRequirement {
     private String term;
     private final Set<String> requiredSkills;
     private int teachersNeeded;
-    private int hoursPerWeek;
+    private int assignedCount;  //track how many teachers already assigned
 
     /**
-     * Creates a TeachingRequirement object.
-     *
-     * @param requirementId unique requirement identifier
-     * @param courseName course name
-     * @param term academic term
-     * @param requiredSkills skills required for this requirement
-     * @param teachersNeeded number of teachers needed
-     * @param hoursPerWeek teaching hours per week
+     * Creates a new TeachingRequirement with auto-generated ID
      */
-    public TeachingRequirement(String requirementId, String courseName, String term,
-                               Set<String> requiredSkills, int teachersNeeded, int hoursPerWeek) {
-        validateRequirementId(requirementId);
-        validateCourseName(courseName);
-        validateTerm(term);
-        validateTeachersNeeded(teachersNeeded);
-        validateHoursPerWeek(hoursPerWeek);
-
-        this.requirementId = requirementId.trim();
-        this.courseName = courseName.trim();
-        this.term = term.trim();
+    public TeachingRequirement(String courseName, String term,
+                               Set<String> requiredSkills, int teachersNeeded) {
+        this.requirementId = generateRequirementId();
+        setCourseName(courseName);
+        setTerm(term);
         this.requiredSkills = normaliseSet(requiredSkills);
-        this.teachersNeeded = teachersNeeded;
-        this.hoursPerWeek = hoursPerWeek;
+        setTeachersNeeded(teachersNeeded);
+        this.assignedCount = 0;
     }
+
+    /**
+     * Full constructor for loading from file
+     */
+    public TeachingRequirement(String requirementId, String courseName,
+                               String term, Set<String> requiredSkills,
+                               int teachersNeeded, int assignedCount) {
+        this.requirementId = requirementId;
+        setCourseName(courseName);
+        setTerm(term);
+        this.requiredSkills = normaliseSet(requiredSkills);
+        setTeachersNeeded(teachersNeeded);
+        setAssignedCount(assignedCount);
+    }
+
+    //==============================  Getters  ==============================
 
     public String getRequirementId() {
         return requirementId;
     }
+
     public String getCourseName() {
         return courseName;
     }
+
     public String getTerm() {
         return term;
     }
 
-    /**
-     * Returns an unmodifiable copy-like view to protect encapsulation.
-     */
     public Set<String> getRequiredSkills() {
         return Collections.unmodifiableSet(requiredSkills);
     }
+
     public int getTeachersNeeded() {
         return teachersNeeded;
     }
-    public int getHoursPerWeek() {
-        return hoursPerWeek;
+
+    public int getAssignedCount() {
+        return assignedCount;
     }
 
-    /**
-     * Updates course name with validation.
-     *
-     * @param courseName new course name
-     */
+    public boolean isFulfilled() {
+        return assignedCount >= teachersNeeded;
+    }
+
+    public int getRemainingNeeded() {
+        return Math.max(0, teachersNeeded - assignedCount);
+    }
+
+    //==============================  Setters with validation  ==============================
+
     public void setCourseName(String courseName) {
         validateCourseName(courseName);
         this.courseName = courseName.trim();
     }
 
-    /**
-     * Updates term with validation.
-     *
-     * @param term new academic term
-     */
     public void setTerm(String term) {
         validateTerm(term);
         this.term = term.trim();
     }
 
-    /**
-     * Updates number of teachers needed.
-     *
-     * @param teachersNeeded number of teachers
-     */
     public void setTeachersNeeded(int teachersNeeded) {
-        validateTeachersNeeded(teachersNeeded);
+        if (teachersNeeded <= 0) {
+            throw new IllegalArgumentException("Teachers needed must be positive, got: " + teachersNeeded);
+        }
         this.teachersNeeded = teachersNeeded;
     }
 
-    /**
-     * Updates teaching hours per week.
-     *
-     * @param hoursPerWeek hours per week
-     */
-    public void setHoursPerWeek(int hoursPerWeek) {
-        validateHoursPerWeek(hoursPerWeek);
-        this.hoursPerWeek = hoursPerWeek;
+    public void setAssignedCount(int assignedCount) {
+        if (assignedCount < 0) {
+            throw new IllegalArgumentException("Assigned cannot be negative: " + assignedCount);
+        }
+        if (assignedCount > teachersNeeded) {
+            throw new IllegalArgumentException("Assigned count cannot exceed teachers needed");
+        }
+        this.assignedCount = assignedCount;
     }
 
-    /**
-     * Checks whether this requirement needs a given skill.
-     *
-     * @param skill skill name
-     * @return true if required
-     */
+    //==============================  Business Methods  ==============================
+
     public boolean requiresSkill(String skill) {
-        if (skill == null || skill.trim().isEmpty()) {
-            return false;
-        }
+        if (skill == null || skill.trim().isEmpty()) return false;
         return requiredSkills.contains(skill.trim().toLowerCase());
     }
 
-    /**
-     * Adds a required skill.
-     *
-     * @param skill skill to add
-     * @return true if added successfully
-     */
     public boolean addRequiredSkill(String skill) {
-        if (skill == null || skill.trim().isEmpty()) {
-            return false;
-        }
+        if (skill == null || skill.trim().isEmpty()) return false;
         return requiredSkills.add(skill.trim().toLowerCase());
     }
 
-    /**
-     * Removes a required skill.
-     *
-     * @param skill skill to remove
-     * @return true if removed successfully
-     */
     public boolean removeRequiredSkill(String skill) {
-        if (skill == null || skill.trim().isEmpty()) {
-            return false;
-        }
+        if (skill == null || skill.trim().isEmpty()) return false;
         return requiredSkills.remove(skill.trim().toLowerCase());
     }
 
-    /**
-     * Returns a human-readable string for CLI display.
-     */
+    public boolean incrementAssignedCount() {
+        if (isFulfilled()) return false;
+        assignedCount++;
+        return true;
+    }
+
+    public boolean decrementAssignedCount() {
+        if (assignedCount <= 0) return false;
+        assignedCount--;
+        return true;
+    }
+
+    //==============================  Display Methods  ==============================
+
     public String toDisplayString() {
-        return "Requirement ID: " + requirementId
-                + " | Course: " + courseName
-                + " | Term: " + term
-                + " | Required Skills: " + requiredSkills
-                + " | Teachers Needed: " + teachersNeeded
-                + " | Hours/Week: " + hoursPerWeek;
+        return String.format("requirementId: %s | courseName: %s | term: %s | requiredSkills: %s | teachersNeeded: %d/%d %s",
+                requirementId, courseName, term,
+                requiredSkills.isEmpty() ? "无" : requiredSkills,
+                assignedCount, teachersNeeded,
+                isFulfilled() ? "已满" : "缺" + getRemainingNeeded()
+        );
     }
 
-    @Override
-    public String toString() {
-        return toDisplayString();
+    public String toShortString() {
+        return String.format("[%s] %s (%s) %d/%d",
+                requirementId, courseName, term, assignedCount, teachersNeeded);
     }
 
     /**
-     * Equality is based on requirementId because it is the unique identifier.
+     * File storage format for RequirementRepository
      */
+    public String toFileString() {
+        String skillsStr = String.join(",", requiredSkills);
+        return String.join("|",
+                requirementId, courseName, term, skillsStr,
+                String.valueOf(teachersNeeded), String.valueOf(assignedCount)
+        );
+    }
+
+    /**
+     * Creates a TeachingRequirement from file string
+     */
+    public static TeachingRequirement fromFileString(String line) {
+        String[] parts = line.split("\\|");
+        if (parts.length != 6) {
+            throw new IllegalArgumentException("Invalid requirement file format: " + line);
+        }
+
+        String requirementId = parts[0];
+        String courseName = parts[1];
+        String term = parts[2];
+
+        Set<String> skills = new HashSet<>();
+        if (!parts[3].isEmpty()) {
+            skills.addAll(Set.of(parts[3].split(",")));
+        }
+
+        int teachersNeeded = Integer.parseInt(parts[4]);
+        int assignedCount = Integer.parseInt(parts[5]);
+
+        return new TeachingRequirement(requirementId, courseName, term,
+                skills, teachersNeeded, assignedCount);
+    }
+
+    //==============================  Utility Methods  ==============================
+
+    private static String generateRequirementId() {
+        return "R" + UUID.randomUUID().toString().substring(0, 6).toUpperCase();
+    }
+
+    private Set<String> normaliseSet(Set<String> values) {
+        Set<String> result = new HashSet<>();
+        if (values == null) return result;
+        for (String value : values) {
+            if (value != null && !value.trim().isEmpty()) {
+                result.add(value.trim().toLowerCase());
+            }
+        }
+        return result;
+    }
+
+    private void validateCourseName(String courseName) {
+        if (courseName == null || courseName.trim().isEmpty()) {
+            throw new IllegalArgumentException("Course name cannot be null or empty");
+        }
+    }
+
+    private void validateTerm(String term) {
+        if (term == null || term.trim().isEmpty()) {
+            throw new IllegalArgumentException("Term cannot be null or empty");
+        }
+    }
+
     @Override
-    public boolean equals(Object obj) {
-        if (this == obj) {
-            return true;
-        }
-        if (!(obj instanceof TeachingRequirement)) {
-            return false;
-        }
-        TeachingRequirement other = (TeachingRequirement) obj;
-        return Objects.equals(this.requirementId, other.requirementId);
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        TeachingRequirement that = (TeachingRequirement) o;
+        return Objects.equals(requirementId, that.requirementId);
     }
 
     @Override
@@ -185,55 +234,8 @@ public class TeachingRequirement {
         return Objects.hash(requirementId);
     }
 
-    // ----------------------------
-    // Private helper methods
-    // ----------------------------
-
-    private void validateRequirementId(String requirementId) {
-        if (requirementId == null || requirementId.trim().isEmpty()) {
-            throw new IllegalArgumentException("Requirement ID cannot be null or empty.");
-        }
-    }
-    private void validateCourseName(String courseName) {
-        if (courseName == null || courseName.trim().isEmpty()) {
-            throw new IllegalArgumentException("Course name cannot be null or empty.");
-        }
-    }
-    private void validateTerm(String term) {
-        if (term == null || term.trim().isEmpty()) {
-            throw new IllegalArgumentException("Term cannot be null or empty.");
-        }
-    }
-    private void validateTeachersNeeded(int teachersNeeded) {
-        if (teachersNeeded <= 0) {
-            throw new IllegalArgumentException("Teachers needed cannot be less than zero.");
-        }
-    }
-    private void validateHoursPerWeek(int hoursPerWeek) {
-        if (hoursPerWeek <= 0) {
-            throw new IllegalArgumentException("Hours per week cannot be less than zero.");
-        }
-    }
-
-    /**
-     * Normalises input strings:
-     * - null-safe
-     * - trims spaces
-     * - converts to lowercase
-     * - removes empty values
-     */
-    private Set<String> normaliseSet(Set<String> values) {
-        Set<String> result = new HashSet<>();
-        if (values == null) {
-            return result;
-        }
-
-        for (String value : values) {
-            if (value != null && !value.trim().isEmpty()) {
-                result.add(value.trim().toLowerCase());
-            }
-        }
-
-        return result;
+    @Override
+    public String toString() {
+        return toDisplayString();
     }
 }
