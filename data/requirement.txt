@@ -1,0 +1,6 @@
+R651AD8|Software Engineering|2026 Spring|java|1|1
+R39015C|R001|Java Programming|2026 spring|1|0
+RC1B241|Java Programming|2026 Spring|python,java|1|1
+RC97CD6|Data Structures|2026 Spring|java|1|1
+REE120A|Progamming for ai|2026 Spring|python|2|1
+R17E83D|Software Engineering|2026 Spring|java|2|1
