@@ -11,19 +11,11 @@ import java.util.stream.Collectors;
  * Uses FileStorage to read from and write to a text file
  * <p>
  * File format: requirementId|courseName|term|skill1,skill2|teachersNeeded|assignedCount
-<<<<<<< HEAD
- * Example: R001|Java编程|2025春|Java,Spring|2|1
- */
-public class RequirementRepository {
-
-    private static final String FILE_PATH = "requirement.txt";
-=======
  * Example: R001|Java programming|2025 Spring|Java,Spring|2|1
  */
 public class RequirementRepository {
 
-    private static final String FILE_PATH = "data/requirement.txt";
->>>>>>> 1fd0404 (test)
+    private static final String FILE_PATH = "requirement.txt";
     private List<TeachingRequirement> requirements;
 
     public RequirementRepository() {
@@ -42,17 +34,10 @@ public class RequirementRepository {
                 TeachingRequirement req = TeachingRequirement.fromFileString(line);
                 requirements.add(req);
             } catch (Exception e) {
-<<<<<<< HEAD
-                System.err.println("跳过无效的需求记录：" + line);
-            }
-        }
-        System.out.println("已加载 " + requirements.size() + " 条需求记录");
-=======
                 System.err.println("Skip invalid requirement records：" + line);
             }
         }
         System.out.println("Loaded " + requirements.size() + "demand records ");
->>>>>>> 1fd0404 (test)
     }
 
     /**

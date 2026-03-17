@@ -145,15 +145,9 @@ public class TeachingRequirement {
     public String toDisplayString() {
         return String.format("requirementId: %s | courseName: %s | term: %s | requiredSkills: %s | teachersNeeded: %d/%d %s",
                 requirementId, courseName, term,
-<<<<<<< HEAD
-                requiredSkills.isEmpty() ? "无" : requiredSkills,
-                assignedCount, teachersNeeded,
-                isFulfilled() ? "已满" : "缺" + getRemainingNeeded()
-=======
                 requiredSkills.isEmpty() ? "empty" : requiredSkills,
                 assignedCount, teachersNeeded,
                 isFulfilled() ? "full" : "lack" + getRemainingNeeded()
->>>>>>> 1fd0404 (test)
         );
     }
 

@@ -1,2 +1,0 @@
-T001,Kris,python;java,software engineering;it
-T001,Kris,java.python,software engineering;it

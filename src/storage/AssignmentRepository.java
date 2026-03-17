@@ -29,16 +29,6 @@ public class AssignmentRepository {
 
         for (String line : lines) {
             try {
-<<<<<<< HEAD
-                //使用之前定义的fromFileString方法
-                Assignment assignment = Assignment.fromFileString(line);
-                assignments.add(assignment);
-            } catch (Exception e) {
-                System.err.println("跳过无效的分配记录：" + line);
-            }
-        }
-        System.out.println("已加载 " + assignments.size() + " 条分配记录");
-=======
                 //Use the previously defined fromFileString method
                 Assignment assignment = Assignment.fromFileString(line);
                 assignments.add(assignment);
@@ -47,7 +37,6 @@ public class AssignmentRepository {
             }
         }
         System.out.println("loaded" + assignments.size() + " allocation record");
->>>>>>> 1fd0404 (test)
     }
 
     /**
@@ -58,11 +47,7 @@ public class AssignmentRepository {
                 .map(Assignment::toFileString)
                 .collect(Collectors.toList());
         FileStorage.writeLines(FILE_PATH, lines);
-<<<<<<< HEAD
-        System.out.println("| 已保存 " + lines.size() + " 条分配记录到文件");
-=======
         System.out.println("| saved" + lines.size() + "Assign records to file ");
->>>>>>> 1fd0404 (test)
     }
 
     /**
@@ -72,13 +57,8 @@ public class AssignmentRepository {
      */
     public void addAssignment(Assignment assignment) {
         assignments.add(assignment);
-<<<<<<< HEAD
-        saveAll();  //实时持久化
-        System.out.println("+ 已添加分配：" + assignment.getAssignmentId());
-=======
         saveAll();  //real-time persistence
         System.out.println("+Allocation added ：" + assignment.getAssignmentId());
->>>>>>> 1fd0404 (test)
     }
 
     /**
@@ -89,11 +69,7 @@ public class AssignmentRepository {
     public void addAllAssignments(List<Assignment> newAssignments) {
         assignments.addAll(newAssignments);
         saveAll();
-<<<<<<< HEAD
-        System.out.println("+ 已批量添加：" + newAssignments.size() + " 条分配记录");
-=======
         System.out.println("+ Added in batches：" + newAssignments.size() + " allocation record");
->>>>>>> 1fd0404 (test)
     }
 
     /**
@@ -174,13 +150,8 @@ public class AssignmentRepository {
     public boolean deleteAssignment(String assignmentId) {
         boolean removed = assignments.removeIf(a -> a.getAssignmentId().equals(assignmentId));
         if (removed) {
-<<<<<<< HEAD
-            saveAll();  //立刻保存
-            System.out.println("- 已删除分配：" + assignmentId);
-=======
             saveAll();  //instant save
             System.out.println("- Assignment deleted：" + assignmentId);
->>>>>>> 1fd0404 (test)
         }
         return removed;
     }
@@ -196,11 +167,7 @@ public class AssignmentRepository {
         if (!toRemove.isEmpty()) {
             assignments.removeAll(toRemove);
             saveAll();
-<<<<<<< HEAD
-            System.out.println("- 已删除：" + toRemove.size() + " 条相关分配记录");
-=======
             System.out.println("- Deleted：" + toRemove.size() + " related allocation records");
->>>>>>> 1fd0404 (test)
         }
         return toRemove.size();
     }
@@ -216,11 +183,7 @@ public class AssignmentRepository {
         if (!toRemove.isEmpty()) {
             assignments.removeAll(toRemove);
             saveAll();
-<<<<<<< HEAD
-            System.out.println("- 已删除：" + toRemove.size() + " 条相关分配记录");
-=======
             System.out.println("- Deleted：" + toRemove.size() + " related allocation records");
->>>>>>> 1fd0404 (test)
         }
         return toRemove.size();
     }
@@ -243,10 +206,6 @@ public class AssignmentRepository {
     public void clearAll() {
         assignments.clear();
         saveAll();
-<<<<<<< HEAD
-        System.out.println("# 已清空所有分配记录！");
-=======
         System.out.println("#All allocation records have been cleared! ");
->>>>>>> 1fd0404 (test)
     }
 }
