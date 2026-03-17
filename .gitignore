@@ -1,9 +1,12 @@
 
 target/
 .idea/
+<<<<<<< HEAD
 *.iml
 out/
 *.class
+=======
+>>>>>>> 1fd0404 (test)
 .DS_Store
 # Compiled class file
 *.class
