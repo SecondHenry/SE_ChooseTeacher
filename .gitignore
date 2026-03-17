@@ -1,6 +1,9 @@
 
 target/
 .idea/
+*.iml
+out/
+*.class
 .DS_Store
 # Compiled class file
 *.class
