@@ -15,7 +15,7 @@ import java.util.stream.Collectors;
  */
 public class RequirementRepository {
 
-    private static final String FILE_PATH = "data/requirement.txt";
+    private static final String FILE_PATH = "requirement.txt";
     private List<TeachingRequirement> requirements;
 
     public RequirementRepository() {
